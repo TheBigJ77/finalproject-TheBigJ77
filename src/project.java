@@ -36,7 +36,7 @@ public class project extends JComponent implements KeyListener {
     Rectangle player = new Rectangle(400, 550, 50, 50);
     int speed = 2;
     int RandomX = 0;
-    int RandomY = 0;
+    int RandomY = 50;
     int moveX = 0;
     int moveY = 0;
     boolean inAir = false;
@@ -44,12 +44,14 @@ public class project extends JComponent implements KeyListener {
     int frameCount = 0;
     int startOfScreen = 100;
     int endOfScreen = 700;
+    int fally = 50;
     //keyboard variables
     boolean right = false;
     boolean left = false;
     int x = 50;
     // block
     ArrayList<Rectangle> carrots = new ArrayList<Rectangle>();
+    ArrayList<Rotten> rottenCarrots = new ArrayList<Rotten>();
     //load in game border
     BufferedImage border = loadImage("border.png");
     //Load in title game title
@@ -88,13 +90,10 @@ public class project extends JComponent implements KeyListener {
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
         // GAME DRAWING GOES HERE 
-
-
         //START SCREEN//////////
         if (screen == 0) {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, 800, 600);
-
 
             g.drawImage(carrot, 128, 105, 50, 50, null);
             g.drawImage(carrot, 128, 145, 50, 50, null);
@@ -127,12 +126,10 @@ public class project extends JComponent implements KeyListener {
             }
 
             //Right side border //Left side border
-
             for (int sideY = 500; sideY >= 0; sideY = sideY - 50) {
                 g.drawImage(border, 750, sideY, 50, 50, null);
                 g.drawImage(border, 0, sideY, 50, 50, null);
             }
-
 
             g.drawImage(border, 750, 0, 50, 50, null);
 
@@ -144,13 +141,9 @@ public class project extends JComponent implements KeyListener {
                 g.drawImage(bunnyForward, player.x, player.y, player.width, player.height, null);
             }
 
-            
-                g.drawImage(carrot, randNum, 50, 50, 50, null);
+            g.drawImage(carrot, randNum, fally, 50, 50, null);
 
-            
         }
-
-
 
         // GAME DRAWING ENDS HERE
     }
@@ -172,7 +165,6 @@ public class project extends JComponent implements KeyListener {
 
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
-
             if (player.x == 50) {
                 player.x = player.x + 10;
 
@@ -183,12 +175,8 @@ public class project extends JComponent implements KeyListener {
 
             }
 
-
-
             //Carrots
             // block
-
-
             if (screen == 1) {
                 if (left) {
                     player.x = player.x - 2;
@@ -198,11 +186,6 @@ public class project extends JComponent implements KeyListener {
                     player.x = player.x + 0;
                 }
 
-
-
-
-
-
                 // if feet of player become lower than the ground   
                 if (player.y + player.height > 550) {
                     // stops the falling
@@ -210,23 +193,26 @@ public class project extends JComponent implements KeyListener {
                     moveY = 0;
                     inAir = false;
                 }
-
-
-
-                if (screen == 1) {
-
-
-                    randNum = (int) (Math.random() * (endOfScreen - startOfScreen + 1)) + startOfScreen;
                 
+                if(randNum.intersects(player.x) && fally.intersects(player.y)){
+                    
+                }
+
+                randNum = (int) (Math.random() * (endOfScreen - startOfScreen + 1)) + startOfScreen;
+
+                int numberOfCarrots = 6;
+
+                for (int i = 0; i < numberOfCarrots; i++) {
+                    randNum = (int) (Math.random() * (-100 - -1000 + 1)) + -1000;
+                    RandomY = (int) (Math.random() * (450 - 100 + 1)) + 100;
+                    speed = (int) (Math.random() * (10 - 5 + 1)) + 5;
+                    carrot.add(new Rotten(RandomX, RandomY, 100, 100));
 
                 }
 
                 // GAME LOGIC ENDS HERE 
-
                 // update the drawing (calls paintComponent)
                 repaint();
-
-
 
                 // SLOWS DOWN THE GAME BASED ON THE FRAMERATE ABOVE
                 // USING SOME SIMPLE MATH
@@ -242,8 +228,6 @@ public class project extends JComponent implements KeyListener {
                     }
                 } catch (Exception e) {
                 };
-
-
 
             }
         }
@@ -287,7 +271,6 @@ public class project extends JComponent implements KeyListener {
 
             }
         } else {
-
 
             int key = e.getKeyCode();
             if (key == KeyEvent.VK_LEFT) {
