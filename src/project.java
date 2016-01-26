@@ -54,6 +54,7 @@ public class project extends JComponent implements KeyListener {
     int x = 50;
     // block
     ArrayList<Rectangle> carrots = new ArrayList<Rectangle>();
+    ArrayList<Rotten> rottenCarrots = new ArrayList<Rotten>();
     //load in game border
     BufferedImage border = loadImage("border.png");
     //Load in title game title
