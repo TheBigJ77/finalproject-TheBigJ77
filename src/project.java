@@ -34,16 +34,20 @@ public class project extends JComponent implements KeyListener {
     int screen = 0;
     // player
     Rectangle player = new Rectangle(400, 550, 50, 50);
-    int speed = 2;
+    int speed;
     int RandomX = 0;
-    int RandomY = 0;
+    int RandomY = 50;
     int moveX = 0;
     int moveY = 0;
+    int spawnNext = 6;
     boolean inAir = false;
     int gravity = 3;
     int frameCount = 0;
     int startOfScreen = 100;
     int endOfScreen = 700;
+    int fally = 50;
+    boolean drawCarrot = false;
+    int score = 0;
     //keyboard variables
     boolean right = false;
     boolean left = false;
@@ -68,6 +72,11 @@ public class project extends JComponent implements KeyListener {
     BufferedImage bunnyForward = loadImage("bunyforward.png");
     private boolean buttonPressed;
     private int randNum;
+    private Object intersection;
+
+    public project() {
+        this.speed = randNum;
+    }
 
     public BufferedImage loadImage(String filename) {
         BufferedImage img = null;
@@ -88,13 +97,12 @@ public class project extends JComponent implements KeyListener {
         g.clearRect(0, 0, WIDTH, HEIGHT);
 
         // GAME DRAWING GOES HERE 
-
-
         //START SCREEN//////////
+
+
         if (screen == 0) {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, 800, 600);
-
 
             g.drawImage(carrot, 128, 105, 50, 50, null);
             g.drawImage(carrot, 128, 145, 50, 50, null);
@@ -119,6 +127,7 @@ public class project extends JComponent implements KeyListener {
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, 800, 600);
 
+            carrots.add(new Rectangle(randNum, 50, 50, 50));
             //bottom border //top border
             g.drawImage(border, 0, 550, 50, 50, null);
             for (int x = 0; x < 800; x = x + 50) {
@@ -127,29 +136,40 @@ public class project extends JComponent implements KeyListener {
             }
 
             //Right side border //Left side border
-
             for (int sideY = 500; sideY >= 0; sideY = sideY - 50) {
                 g.drawImage(border, 750, sideY, 50, 50, null);
                 g.drawImage(border, 0, sideY, 50, 50, null);
             }
 
-
             g.drawImage(border, 750, 0, 50, 50, null);
 
+            //what to draw if the player is moving right
             if (right) {
                 g.drawImage(bunnyRight, player.x, player.y, player.width, player.height, null);
+                //what to draw if the player is moving right
             } else if (left) {
                 g.drawImage(bunnyLeft, player.x, player.y, player.width, player.height, null);
+                //what to draw if the player is not moving
             } else {
                 g.drawImage(bunnyForward, player.x, player.y, player.width, player.height, null);
             }
 
-            
-                g.drawImage(carrot, randNum, 50, 50, 50, null);
+            if (drawCarrot == false) {
+                carrots.add(new Rectangle(randNum, fally, 50, 50));
+            }
 
-            
+            //drawing the carrots
+            if (drawCarrot == true) {
+
+                randNum = (int) (Math.random() * (endOfScreen - startOfScreen + 1)) + startOfScreen;
+                carrots.add(new Rectangle(randNum, fally, 50, 50));
+
+                System.out.println("1");
+                drawCarrot = false;
+
+            }
+
         }
-
 
 
         // GAME DRAWING ENDS HERE
@@ -163,6 +183,7 @@ public class project extends JComponent implements KeyListener {
         long startTime;
         long deltaTime;
 
+
         // the main game loop section
         // game will end if you set done = false;
         boolean done = false;
@@ -172,61 +193,68 @@ public class project extends JComponent implements KeyListener {
 
             // all your game rules and move is done in here
             // GAME LOGIC STARTS HERE 
+            if (screen == 0) {
+                if (right) {
+                    screen = 1;
+                    System.out.println("yo");
 
-            if (player.x == 50) {
-                player.x = player.x + 10;
-
+                }
             }
-
-            if (player.x == 700) {
-                player.x = player.x - 10;
-
-            }
-
-
-
-            //Carrots
-            // block
-
 
             if (screen == 1) {
-                if (left) {
-                    player.x = player.x - 2;
-                } else if (right) {
-                    player.x = player.x + 2;
-                } else {
-                    player.x = player.x + 0;
+                //if the player tries to go past the left border
+                if (player.x == 50) {
+                    player.x = player.x + 10;
+
+                }
+                //if the player tries to go past the right border
+
+                if (player.x == 700) {
+                    player.x = player.x - 10;
+
                 }
 
 
 
-
-
-
-                // if feet of player become lower than the ground   
-                if (player.y + player.height > 550) {
-                    // stops the falling
-                    player.y = 550 - player.height;
-                    moveY = 0;
-                    inAir = false;
-                }
-
-
-
+                //moving the player left or right
                 if (screen == 1) {
+                    if (left) {
+                        player.x = player.x - 2;
+                    } else if (right) {
+                        player.x = player.x + 2;
+                    } else {
+                        player.x = player.x + 0;
+                    }
+
+                    // if feet of player become lower than the ground   
+                    if (player.y + player.height > 550) {
+                        // stops the falling
+                        player.y = 550 - player.height;
+                        moveY = 0;
+                        inAir = false;
+                    }
 
 
-                    randNum = (int) (Math.random() * (endOfScreen - startOfScreen + 1)) + startOfScreen;
-                
 
+                }
+
+                if (drawCarrot == false) {
+                    fally = fally + speed;
+                }
+
+                Iterator<Rectangle> it = carrots.iterator();
+                while (it.hasNext()) {
+                    Rectangle block = it.next();
+                    if (player.intersects(block)) {
+                        it.remove();
+                        score++;
+                        drawCarrot = true;
+                    }
                 }
 
                 // GAME LOGIC ENDS HERE 
-
                 // update the drawing (calls paintComponent)
                 repaint();
-
-
 
                 // SLOWS DOWN THE GAME BASED ON THE FRAMERATE ABOVE
                 // USING SOME SIMPLE MATH
@@ -242,8 +270,6 @@ public class project extends JComponent implements KeyListener {
                     }
                 } catch (Exception e) {
                 };
-
-
 
             }
         }
@@ -280,22 +306,18 @@ public class project extends JComponent implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (screen == 0) {
-            int key = e.getKeyCode();
-            if (key == KeyEvent.VK_ENTER) {
-                screen = 1;
 
-            }
-        } else {
+        int key = e.getKeyCode();
 
 
-            int key = e.getKeyCode();
-            if (key == KeyEvent.VK_LEFT) {
-                left = true;
 
-            } else if (key == KeyEvent.VK_RIGHT) {
-                right = true;
-            }
+
+        if (key == KeyEvent.VK_LEFT) {
+            left = true;
+            right = false;
+        } else if (key == KeyEvent.VK_RIGHT) {
+            right = true;
+            left = false;
         }
     }
 
